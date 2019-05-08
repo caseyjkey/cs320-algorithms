@@ -1,8 +1,7 @@
 import sys
 import math
-from collections import OrderedDict 
 
-
+# BEGIN DO NOT MODIFY
 
 db = False
 swap_count = 0
@@ -32,6 +31,17 @@ def count_heapify():
 def current_counts():
     return {'swap_count': swap_count, 'heapify_call_count': heapify_call_count}
 
+
+def readNums(filename):
+    """Reads a text file containing whitespace separated numbers.
+    Returns a list of those numbers."""
+    with open(filename) as f:
+        lst = [int(x) for line in f for x in line.strip().split() if x]
+        if db:
+            print("List read from file {}: {}".format(filename, lst))
+        return lst
+
+    
 # heaps here are complete binary trees allocated in arrays (0 based)
 def parent(i):
     return (i - 1) // 2
@@ -159,120 +169,69 @@ def printCompleteTree(A):
     print()
 
 
+def shuffled_list(length, seed):
+    A = list(range(10, length + 10))
+    import random
+    r = random.Random(seed) # pseudo random, so it is repeatable
+    r.shuffle(A)
+    return A
 
 
-def file_character_frequencies(file_name):
-    charDict = {}
-    """with open(file_name) as file:
-        while True:
-            key =  file.read(1)
-            if not key: break
-            if key in charDict: charDict[key] += 1
-            else: charDict[key] = 1 """
-    #with open(file_name) as file:
-    file = open(file_name)
-     
-    data = file.read()
-    freqList = [PriorityTuple((data.count(c), c)) 
-	        for c in sorted(set(data))]
-    file.close()    
+def report_counts_on_basic_ops(A, loop_extracts=1, loop_inserts=1):
+    original_len = len(A)
+    print("\nREPORT on list of len: {}".format(original_len))
+    reset_counts()
+    buildHeap(A)
+    print("buildHeap(A):           \t", current_counts())
 
-        
-    return freqList
+    reset_counts()
+    m = heapExtractMin(A)
+    print("heapExtractMin(A) => {}:\t".format(m), current_counts())
 
+    reset_counts()
+    heapInsert(A, m)
+    print("heapInsert(A, {}):       \t".format(m), current_counts())
 
-class PriorityTuple(tuple):
-    """A specialization of tuple that compares only its first item when sorting.
-    Create one using double parens e.g. PriorityTuple((x, (y, z))) """
-    def __lt__(self, other):
-        return self[0] < other[0]
+    for i in range(loop_extracts):
+        reset_counts()
+        m = heapExtractMin(A)
+        print("heapExtractMin(A) => {}:\t".format(m), current_counts())
 
-    def __le__(self, other):
-        return self[0] <= other[0]
-
-
-def buildBodes(freqList, resultDict, code):
-    if(isinstance(freqList[1], str)):
-        resultDict[freqList[1]] = code
-    else:
-        buildBodes(freqList[1][0], resultDict, code + "0")
-        buildBodes(freqList[1][1], resultDict, code + "1")
-        
-        
-def huffman_codes_from_frequencies(frequencies):
-    # ----------- turn dict into list ---------
-    """freqList = []
-    for item in frequencies.items():
-        freqList.append(item)
-    freqList = [(t[1], t[0]) for t in freqList]"""
-
-    
-    #print("----- before heapify ------")
-    #print(freqList)
-    buildHeap(frequencies)
-    #print(freqList)
-    #print("----- after heapify -------")
-    
-    for i in range(1, len(frequencies)):
-        t1 = heapExtractMin(frequencies)
-        t2 = heapExtractMin(frequencies)
-        t3 = PriorityTuple( ( t1[0] + t2[0] , (t1, t2)) )
-        heapInsert(frequencies, t3)
-    #print("\nfreqList", heapExtractMin(freqList), "leedle")
-    resultDict = {}
-    buildBodes(heapExtractMin(frequencies), resultDict, "")
-    return resultDict
-
-
-def huffman_letter_codes_from_file_contents(file_name):
-    """WE WILL GRADE BASED ON THIS FUNCTION."""
-    # Suggested strategy...
-    freqs = file_character_frequencies(file_name)
-    return huffman_codes_from_frequencies(freqs)
-
-
-
-def encode_file_using_codes(file_name, letter_codes):
-    """Provided to help you play with your code."""
-    contents = ""
-    with open(file_name) as f:
-        contents = f.read()
-    file_name_encoded = file_name + "_encoded"
-    with open(file_name_encoded, 'w') as fout:
-        for c in contents:
-            fout.write(letter_codes[c])
-    print("Wrote encoded text to {}".format(file_name_encoded))
-
-
-def decode_file_using_codes(file_name_encoded, letter_codes):
-    """Provided to help you play with your code."""
-    contents = ""
-    with open(file_name_encoded) as f:
-        contents = f.read()
-    file_name_encoded_decoded = file_name_encoded + "_decoded"
-    codes_to_letters = {v: k for k, v in letter_codes.items()}
-    with open(file_name_encoded_decoded, 'w') as fout:
-        num_decoded_chars = 0
-        partial_code = ""
-        while num_decoded_chars < len(contents):
-            partial_code += contents[num_decoded_chars]
-            num_decoded_chars += 1
-            letter = codes_to_letters.get(partial_code)
-            if letter:
-                fout.write(letter)
-                partial_code = ""
-    print("Wrote decoded text to {}".format(file_name_encoded_decoded))
+    import random
+    r = random.Random(0)
+    for i in range(loop_inserts):
+        reset_counts()
+        new_number = r.randrange(0, original_len // 8)
+        heapInsert(A, new_number)
+        print("heapInsert(A, {}):       \t".format(new_number), current_counts())
 
 
 def main():
-    """Provided to help you play with your code."""
-    import pprint
-    frequencies = file_character_frequencies(sys.argv[1])
-    pprint.pprint(frequencies)
-    codes = huffman_codes_from_frequencies(frequencies)
-    pprint.pprint(codes)
+    global db
+    if len(sys.argv) > 2:
+        db = True
+    
+
+    A = shuffled_list(20, 0)
+    print("Complete Tree size 20:")
+    printCompleteTree(A)
+    buildHeap(A)
+    print("Heap size 20:")
+    printCompleteTree(A)
 
 
-if __name__ == '__main__':
-    """We are NOT grading you based on main, this is for you to play with."""
+    A = shuffled_list(30, 0)
+    report_counts_on_basic_ops(A)
+    
+    A = shuffled_list(400, 0)
+    report_counts_on_basic_ops(A)
+    
+    A = shuffled_list(10000, 0)
+    report_counts_on_basic_ops(A)
+
+    A = shuffled_list(100000, 0)
+    report_counts_on_basic_ops(A, 3, 3)
+
+
+if __name__ == "__main__":
     main()
