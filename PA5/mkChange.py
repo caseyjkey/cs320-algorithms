@@ -101,51 +101,20 @@ def mkChangeDP(n):
 ''' Dynamic Programming version of mkChangeDC1 '''     
 def mkChangeDP1(cap):
     global reads
-    refRow = [0 for x in range(n)]
-    curRow = [0 for x in range(n)]
-    #print("{:3} {}".format("Coin", [x for x in range(n)]))
-    for c in range(1, len(coins)):
-        for amount in range(n):
-            if amount % coins[c - 1] == 0 and c - 1 == 0:
-                refRow[amount] = 1
-                curRow[amount] = 1
-            reads += 1
-            if amount - coins[c] >= 0:
-                curRow[amount] += curRow[amount - coins[c]]
-                reads += 1
-        
-        # Output a Table
-        '''
-        if c == 1: 
-            print("-" * (10*3 + 3 + len("Coin [")))
-            print("{:4} {}".format(1, [1 for x in range(n)])) 
-        
-        print("{:4} {}".format(coins[c], curRow))
-        '''
-        
-        refRow = curRow.copy()
     
-    
-    return curRow[-1]
-    '''
-    waysOfDoingNcents = []
-    for i in range(n + 1):
-       waysOfDoingNcents.append(0)
- 
-       
+    waysOfDoingNcents = [0 for x in range(n + 1)]
     waysOfDoingNcents[0] = 1
     
     for c in range(len(coins)):
         coin = coins[c]
         for higherAmount in range(coin, n+1):
             higherAmountRemainder = higherAmount - coin
-            #print('higherAmRem:', higherAmount, '-', coin)
             waysOfDoingNcents[higherAmount] += waysOfDoingNcents[higherAmountRemainder]
             reads += 2
     
 
     return waysOfDoingNcents[n]
-    '''
+    
 if __name__ == "__main__":
    c = len(coins)-1
    print()
@@ -157,8 +126,8 @@ if __name__ == "__main__":
    dataDP  = []
    dataDP1 = []
    
-   for n in range(200,2001,200):
-      #n = 10
+   if True:#for n in range(200,2001,200):
+      n = 200
       print()
       print("Amount:",n)
       
