@@ -77,31 +77,18 @@ def mkChangeDP(n):
 ''' Dynamic Programming version of mkChangeDC1 '''     
 def mkChangeDP1(cap):
     global reads
-    dontTakeRow = [0 for x in range(n)]
-    takeRow = [0 for x in range(n)]
-    #print("{:3} {}".format("Coin", [x for x in range(n)]))
-    for c in range(1, len(coins)):
-        for amount in range(n):
-            if amount % coins[c - 1] == 0 and c - 1 == 0:
-                dontTakeRow[amount] = 1
-                takeRow[amount] = 1
-
-            if amount - coins[c] >= 0:
-                takeRow[amount] += takeRow[amount - coins[c]]
-                reads += 1
-            
-            #dontTakeRow[amount] = dontTakeRow[amount]
-        # Output a Table
-        '''
-        if c == 1: 
-            print("-" * (10*3 + 3 + len("Coin [")))
-            print("{:4} {}".format(1, [1 for x in range(n)])) 
-        
-        print("{:4} {}".format(coins[c], curRow))
-        '''
-        
-        dontTakeRow = takeRow.copy()
+    waysOfDoingNcents = [0 for x in range(n+1)]
+    waysOfDoingNcents[0] = 1
     
+    for c in range(len(coins)):
+        coin = coins[c]
+        for higherAmount in range(coin, n+1):
+            higherAmountRemainder = higherAmount - coin
+            #print('higherAmRem:', higherAmount, '-', coin)
+            waysOfDoingNcents[higherAmount] += waysOfDoingNcents[higherAmountRemainder]
+            reads += 2
+    
+    return waysOfDoingNcents[n]
     
     return takeRow[-1]
     
