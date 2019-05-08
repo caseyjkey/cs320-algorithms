@@ -1,4 +1,5 @@
-import numpy as np
+
+coutimport numpy as np
 import sys
 
 coins = [1,5,10,25]
@@ -73,47 +74,37 @@ def mkChangeDP(n):
     
     return curRow[-1]
         
-    '''table = [[0 for x in range(n + 1)] for x in range(len(coins))]
-    
-    for i in range(len(coins)):
-        table[i][0] = 1
-    
-    for i in range(n + 1):
-        if i % coins[0] == 0:
-            table[0][i] = 1
-    print(" -------- Table ------------")
-    for value in table:
-        print(value)
-    
-    for i in range(1, n+1):
-        for j in range(len(coins)):
-            #coinChoices = n // coins[c]
-            for numCoins in range(coinChoices + 1):
-                # Take
-                #print("i, j:", i, j, "element val:", table[i][j], end = ", ")
-                table[j][i] = table[j - coins[i]][i] if j-coins[i] >= 0 else 0
-                reads += 1
-            print()
-    return 0 #table[n][len(coins) - 1]
-    '''
-    
 
 ''' Dynamic Programming version of mkChangeDC1 '''     
 def mkChangeDP1(cap):
     global reads
-    
-    waysOfDoingNcents = [0 for x in range(n + 1)]
-    waysOfDoingNcents[0] = 1
-    
-    for c in range(len(coins)):
-        coin = coins[c]
-        for higherAmount in range(coin, n+1):
-            higherAmountRemainder = higherAmount - coin
-            waysOfDoingNcents[higherAmount] += waysOfDoingNcents[higherAmountRemainder]
-            reads += 2
-    
+    dontTakeRow = [0 for x in range(n)]
+    takeRow = [0 for x in range(n)]
+    #print("{:3} {}".format("Coin", [x for x in range(n)]))
+    for c in range(1, len(coins)):
+        for amount in range(n):
+            if amount % coins[c - 1] == 0 and c - 1 == 0:
+                dontTakeRow[amount] = 1
+                takeRow[amount] = 1
 
-    return waysOfDoingNcents[n]
+            if amount - coins[c] >= 0:
+                takeRow[amount] += takeRow[amount - coins[c]]
+                reads += 1
+            
+            dontTakeRow[amount] = dontTakeRow[amount]
+        # Output a Table
+        '''
+        if c == 1: 
+            print("-" * (10*3 + 3 + len("Coin [")))
+            print("{:4} {}".format(1, [1 for x in range(n)])) 
+        
+        print("{:4} {}".format(coins[c], curRow))
+        '''
+        
+        refRow = curRow.copy()
+    
+    
+    return curRow[-1]
     
 if __name__ == "__main__":
    c = len(coins)-1
