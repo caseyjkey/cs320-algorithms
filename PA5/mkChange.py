@@ -1,5 +1,4 @@
-
-coutimport numpy as np
+import numpy as np
 import sys
 
 coins = [1,5,10,25]
@@ -91,7 +90,7 @@ def mkChangeDP1(cap):
                 takeRow[amount] += takeRow[amount - coins[c]]
                 reads += 1
             
-            dontTakeRow[amount] = dontTakeRow[amount]
+            #dontTakeRow[amount] = dontTakeRow[amount]
         # Output a Table
         '''
         if c == 1: 
@@ -101,10 +100,10 @@ def mkChangeDP1(cap):
         print("{:4} {}".format(coins[c], curRow))
         '''
         
-        refRow = curRow.copy()
+        dontTakeRow = takeRow.copy()
     
     
-    return curRow[-1]
+    return takeRow[-1]
     
 if __name__ == "__main__":
    c = len(coins)-1
